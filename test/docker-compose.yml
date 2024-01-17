@@ -1,0 +1,18 @@
+version: '3'
+services:
+
+  nginx:
+    image: nginx:alpine
+    container_name: mongrowser_test
+    volumes:
+      - ./templates:/etc/nginx/templates
+      - ./logs:/var/log/nginx
+      - ./html:/usr/share/nginx/html
+      - ../..:/usr/share/nginx/html/packages
+
+      - ./util:/usr/share/nginx/html/util
+      - ./tests:/usr/share/nginx/html/tests
+    ports:
+      - 8080:80
+      - 8090:443
+    restart: unless-stopped

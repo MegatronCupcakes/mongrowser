@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "mongrowser": "http://localhost:8080/packages/mongrowser/index.js",
+                "seed": "http://localhost:8080/util/seed.js",
+                "mocha": "https://unpkg.com/mocha/mocha.js",
+                "chai": "https://unpkg.com/chai/chai.js"
+            }
+        }
+    </script>
+
+    <script type="module" class="mocha-init">
+      import "mocha";
+      import "chai";
+      
+      mocha.setup('bdd');
+      mocha.checkLeaks();
+    </script>
+    <script type="module" src="tests/importJson.test.js"></script>
+    
+    <!--
+    <script class="mocha-exec">
+      mocha.run();
+    </script>
+    -->
+    
+  </body>
+</html>
