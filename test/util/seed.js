@@ -8,6 +8,7 @@ export const getSeeds = () => {
                     _id: crypto.randomUUID(),
                     name: `testRecord ${_i + 1}`,
                     number: _i + 1,
+                    number2: 100 - _i,
                     inRange: []
                 });
             }
