@@ -13,6 +13,6 @@ services:
       - ./util:/usr/share/nginx/html/util
       - ./tests:/usr/share/nginx/html/tests
     ports:
-      - 8080:80
-      - 8090:443
+      - 3000:80
+      - 3090:443
     restart: unless-stopped
