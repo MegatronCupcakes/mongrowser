@@ -22,6 +22,7 @@
 */
 
 import { init as MongrowserInit } from "./lib/init.js";
+import { createIndex as _createIndex} from "./lib/createIndex.js";
 import { count } from "./lib/count.js";
 import { exportJson } from "./lib/export.js";
 import { find } from "./lib/find.js";
@@ -30,22 +31,27 @@ import { importJson } from "./lib/import.js";
 import { insert } from "./lib/insert.js";
 import { remove } from "./lib/remove.js";
 import { update } from "./lib/update.js";
-
+import { dropCollection as _dropCollection } from "./lib/dropCollection.js";
 class Mongrowser {
 
     constructor(databaseName){
-        this.databaseName = databaseName;     
+        this.databaseName = databaseName;
+        this._collections = [];
     }
     getCollection(collectionName, indexFieldArray){
         return new Promise(async (resolve, reject) => {
             try {
                 const collection = new _Collection(this.databaseName, collectionName, indexFieldArray);
                 await collection._init();
+                if(!this._collections.includes(collectionName)) this._collections.push(collectionName);
                 resolve(collection);
             } catch(error){
                 reject(error);
             }
         });                
+    }
+    dropCollection(collectionName){
+        _dropCollection(this.databaseName, collectionName);
     }
     import(importData){        
         return new Promise(async (resolve) => {
@@ -79,12 +85,17 @@ class _Collection {
     constructor(databaseName, collectionName, indexFieldArray){
         this.databaseName = databaseName;
         this.collectionName = collectionName;
-        this.indexFieldArray = indexFieldArray;
+        this.indexFieldArray = indexFieldArray || [];
         this.initialized = false;
     }
     async _init(){
         this.initialized = await MongrowserInit(this.databaseName, this.collectionName, this.indexFieldArray);
         return this.initialized;
+    }
+    createIndex(field){
+        field = JSON.stringify(field);
+        if(!this.indexFieldArray.includes(field)) this.indexFieldArray.push(field);
+        return _createIndex(this.databaseName, this.collectionName, this.indexFieldArray);
     }
     count(){
         return count(this.databaseName, this.collectionName);
