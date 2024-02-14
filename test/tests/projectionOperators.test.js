@@ -1,5 +1,5 @@
 import Mongrowser from "mongrowser";
-import { getSeeds } from "seed";
+import { getSeeds } from "../util/seed.js";
 import _ from "underscore";
 import "mocha";
 
