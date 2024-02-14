@@ -6,7 +6,7 @@
         Queries
             Geospatial Query Operators
             Bitwise Query Operators
-            Miscellaneous Query Operators
+            Miscellaneous Query Operators: '$comment', '$natural'
         Updates
             Field Update Operators: '$setOnInsert'
             Array Update Operators: '$', '$[]', '$[<identifier>]'
