@@ -34,14 +34,14 @@ class Mongrowser {
 
     constructor(databaseName){
         this.databaseName = databaseName;
-        this._collections = [];
+        this._collections = new Set();
     }
-    getCollection(collectionName, indexFieldArray){
+    getCollection(collectionName, indexFields){
         return new Promise(async (resolve, reject) => {
             try {
-                const collection = new _Collection(this.databaseName, collectionName, indexFieldArray);
+                const collection = new _Collection(this.databaseName, collectionName, indexFields);
                 await collection._init();
-                if(!this._collections.includes(collectionName)) this._collections.push(collectionName);
+                this._collections.add(collectionName);
                 resolve(collection);
             } catch(error){
                 reject(error);
@@ -60,7 +60,7 @@ class Mongrowser {
                     const collectionName = collectionNames[i];
                     const collection = await this.getCollection(collectionName);
                     await collection.import(importData[collectionName]);
-                    this._close();
+                    if(i < collectionName.length) this._close();
                 }
                 resolve(true);
             } catch (error){
@@ -80,20 +80,20 @@ class Mongrowser {
 
 class _Collection {
 
-    constructor(databaseName, collectionName, indexFieldArray){
+    constructor(databaseName, collectionName, indexFields){
         this.databaseName = databaseName;
         this.collectionName = collectionName;
-        this.indexFieldArray = indexFieldArray || [];
+        this.indexFields = new Set(indexFields) || new Set();
         this.initialized = false;
     }
     async _init(){
-        this.initialized = await MongrowserInit(this.databaseName, this.collectionName, this.indexFieldArray);
+        this.initialized = await MongrowserInit(this.databaseName, this.collectionName, this.indexFields);
         return this.initialized;
     }
     createIndex(field){
         field = JSON.stringify(field);
-        if(!this.indexFieldArray.includes(field)) this.indexFieldArray.push(field);
-        return _createIndex(this.databaseName, this.collectionName, this.indexFieldArray);
+        this.indexFields.add(field);
+        return _createIndex(this.databaseName, this.collectionName, this.indexFields);
     }
     count(){
         return count(this.databaseName, this.collectionName);
