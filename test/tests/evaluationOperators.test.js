@@ -35,7 +35,7 @@ describe('Evaluation Query Operators', function(){
             }
         });        
     });
-
+    
     it('$expr', () => {
         return new Promise(async (resolve, reject) => {
             try {
@@ -165,8 +165,12 @@ describe('Evaluation Query Operators', function(){
                     testSet.collectionRecordCount = testSet.collectionRecords.length;
                     testData.push(testSet);
                         
-                }                
-                assert(_.every(testData, test => test.collectionRecords.length == 11), 'incorrect number of collection records returned');
+                }
+                let _test;                
+                assert(_.every(testData, test => {
+                    _test = test;
+                    return test.collectionRecords.length == 11
+                }), `incorrect number of collection records returned (${_test.collectionRecords.length} instead of 11)`);
                 resolve();
             } catch(error){
                 reject(error);
