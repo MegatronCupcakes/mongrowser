@@ -8,7 +8,6 @@
             Bitwise Query Operators
             Miscellaneous Query Operators: '$comment', '$natural'
         Updates
-            Field Update Operators: '$setOnInsert'
             Array Update Operators: '$', '$[]', '$[<identifier>]'
             Bitwise Update Operator
         Aggregation
@@ -39,7 +38,7 @@ class Mongrowser {
     getCollection(collectionName, indexFields){
         return new Promise(async (resolve, reject) => {
             try {
-                const collection = new _Collection(this.databaseName, collectionName, indexFields);
+                const collection = new _Collection(this.databaseName, collectionName, (indexFields && indexFields.length > 0) ? indexFields : []);
                 await collection._init();
                 this._collections.add(collectionName);
                 resolve(collection);
@@ -83,17 +82,20 @@ class _Collection {
     constructor(databaseName, collectionName, indexFields){
         this.databaseName = databaseName;
         this.collectionName = collectionName;
-        this.indexFields = new Set(indexFields) || new Set();
+        this.indexFields = new Set(indexFields.map(field => JSON.stringify(field))) || new Set();
         this.initialized = false;
     }
     async _init(){
-        this.initialized = await MongrowserInit(this.databaseName, this.collectionName, this.indexFields);
+        this.initialized = await MongrowserInit(this.databaseName, this.collectionName, Array.from(this.indexFields, field => JSON.parse(field)));
         return this.initialized;
     }
     createIndex(field){
-        field = JSON.stringify(field);
-        this.indexFields.add(field);
-        return _createIndex(this.databaseName, this.collectionName, this.indexFields);
+        const _field = JSON.stringify(field);  
+        if(!this.indexFields.has(_field)){
+            this.indexFields.add(_field);
+            return _createIndex(this.databaseName, this.collectionName, [field]);
+        }      
+        return new Promise((resolve) => resolve(true));
     }
     count(){
         return count(this.databaseName, this.collectionName);
@@ -116,8 +118,8 @@ class _Collection {
     remove(searchObject){
         return remove(this.databaseName, this.collectionName, searchObject);
     }
-    update(searchObject, updateObject){
-        return update(this.databaseName, this.collectionName, searchObject, updateObject);
+    update(searchObject, updateObject, optionsObject){
+        return update(this.databaseName, this.collectionName, searchObject, updateObject, optionsObject);
     }
 
 }
