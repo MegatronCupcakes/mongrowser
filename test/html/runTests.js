@@ -1,4 +1,6 @@
 import "./tests/importJson.test.js";
+import "./tests/createIndex.test.js";
+import "./tests/insert.test.js";
 import "./tests/find.test.js";
 import "./tests/logicalOperators.test.js";
 import "./tests/comparisonOperators.test.js";
@@ -7,3 +9,4 @@ import "./tests/evaluationOperators.test.js";
 import "./tests/arrayQueryOperators.test.js";
 import "./tests/projectionOperators.test.js";
 import "./tests/miscellaneousQueryOperators.test.js";
+import "./tests/fieldUpdateOperators.test.js";
